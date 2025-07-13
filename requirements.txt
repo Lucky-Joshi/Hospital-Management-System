@@ -1,0 +1,4 @@
+customtkinter
+pymongo
+python-dotenv
+bcrypt
