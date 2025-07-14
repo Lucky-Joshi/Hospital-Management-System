@@ -1,40 +1,31 @@
 import customtkinter as ctk
 from tkinter import messagebox
 from models import patient
+from gui.home import open_home_screen
+from gui.home import _current_role as current_role
 
 def open_patient_form():
     app = ctk.CTk()
     app.geometry("400x400")
     app.title("Patient Management")
 
-    ctk.CTkLabel(app, text="Name").pack()
-    name_entry = ctk.CTkEntry(app)
-    name_entry.pack()
+    ctk.CTkButton(app, text="← Back", width=100, command=lambda: [app.destroy(), open_home_screen(current_role)]).pack(pady=5)
 
-    ctk.CTkLabel(app, text="Gender").pack()
-    gender_entry = ctk.CTkEntry(app)
-    gender_entry.pack()
-
-    ctk.CTkLabel(app, text="Phone").pack()
-    phone_entry = ctk.CTkEntry(app)
-    phone_entry.pack()
-
-    ctk.CTkLabel(app, text="Address").pack()
-    address_entry = ctk.CTkEntry(app)
-    address_entry.pack()
+    entries = {}
+    for label in ["Name", "Gender", "Phone", "Address"]:
+        ctk.CTkLabel(app, text=label).pack()
+        entries[label] = ctk.CTkEntry(app)
+        entries[label].pack(pady=5)
 
     def submit():
-        name = name_entry.get()
-        gender = gender_entry.get()
-        phone = phone_entry.get()
-        address = address_entry.get()
-        if name and phone:
-            patient.add_patient(name, gender, phone, address)
-            messagebox.showinfo("Success", "Patient added successfully.")
+        data = {k.lower(): v.get().strip() for k, v in entries.items()}
+        if data["name"] and data["phone"]:
+            patient.add_patient(**data)
+            messagebox.showinfo("Success", "Patient added.")
             app.destroy()
+            open_home_screen(current_role)
         else:
             messagebox.showwarning("Missing Info", "Name and Phone are required.")
 
     ctk.CTkButton(app, text="Submit", command=submit).pack(pady=10)
-
     app.mainloop()
